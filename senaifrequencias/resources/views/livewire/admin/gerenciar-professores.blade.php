@@ -23,20 +23,29 @@
 
     {{-- Tabela --}}
     <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
-        <table class="w-full text-sm min-w-[560px]">
+        <table class="w-full text-sm min-w-[680px]">
             <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">Nome</th>
                     <th class="text-left px-5 py-3 font-semibold text-gray-600">E-mail</th>
+                    <th class="text-left px-5 py-3 font-semibold text-gray-600">Turma</th>
                     <th class="text-center px-5 py-3 font-semibold text-gray-600">Status</th>
                     <th class="text-right px-5 py-3 font-semibold text-gray-600">Ações</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @forelse($professores as $prof)
+                    @php $turmaNome = $turmas->firstWhere('professor_id', $prof->id)?->nome @endphp
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="px-5 py-3 font-medium text-gray-800">{{ $prof->name }}</td>
                         <td class="px-5 py-3 text-gray-600">{{ $prof->email }}</td>
+                        <td class="px-5 py-3 text-gray-600">
+                            @if($turmaNome)
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-xs font-medium">{{ $turmaNome }}</span>
+                            @else
+                                <span class="text-gray-400 text-xs">—</span>
+                            @endif
+                        </td>
                         <td class="px-5 py-3 text-center">
                             <button wire:click="toggleAtivo({{ $prof->id }})"
                                     wire:confirm="{{ $prof->active ? 'Desativar este professor?' : 'Reativar este professor?' }}"
@@ -59,7 +68,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-5 py-10 text-center text-gray-400">
+                        <td colspan="5" class="px-5 py-10 text-center text-gray-400">
                             Nenhum professor encontrado.
                         </td>
                     </tr>
@@ -111,6 +120,21 @@
                         <input wire:model="senha" type="password" placeholder="••••••••"
                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-senai @error('senha') border-red-400 @enderror">
                         @error('senha') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Turma vinculada</label>
+                        <select wire:model="turmaId"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-senai bg-white">
+                            <option value="">— Sem turma —</option>
+                            @foreach($turmas as $turma)
+                                <option value="{{ $turma->id }}"
+                                    @if($turma->professor_id && $turma->professor_id !== $editingId) disabled @endif>
+                                    {{ $turma->nome }}
+                                    @if($turma->professor_id && $turma->professor_id !== $editingId) (ocupada) @endif
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div class="flex gap-3 pt-2">

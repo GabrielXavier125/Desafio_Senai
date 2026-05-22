@@ -54,7 +54,7 @@
         </div>
 
         {{-- Card centralizado --}}
-        <div class="w-full max-w-[420px]">
+        <div id="login-card" class="w-full max-w-[420px]">
 
             <div class="w-full animate-fade-up"
                  style="background:rgba(255,255,255,0.96);
@@ -100,7 +100,7 @@
                     @endif
 
                     {{-- Formulário --}}
-                    <form method="POST" action="{{ route('login') }}" class="space-y-5">
+                    <form id="login-form" method="POST" action="{{ route('login') }}" class="space-y-5">
                         @csrf
 
                         <div>
@@ -163,6 +163,74 @@
             </div>
         </div>
     </div>
+
+
+    {{-- Overlay branco que cobre a tela durante a transição de saída --}}
+    {{-- Começa totalmente transparente (opacity 0) e anima até branco sólido --}}
+    <div id="login-overlay"
+         style="position:fixed; inset:0; background:#F0F2F5; opacity:0; pointer-events:none;
+                transition:opacity 0.55s cubic-bezier(0.4,0,0.2,1); z-index:999;">
+    </div>
+
+    <script>
+        (function () {
+            const form    = document.getElementById('login-form');
+            const card    = document.getElementById('login-card');
+            const overlay = document.getElementById('login-overlay');
+
+            // Aplica a animação de saída: card sobe até sair da tela, fundo vira branco
+            function animarSaida(callback) {
+                // Faz o overlay branco aparecer gradualmente (fundo vai ficando branco)
+                overlay.style.opacity = '1';
+
+                // Desloca o card para cima (fora da viewport) enquanto some
+                card.style.transition = 'transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease';
+                card.style.transform  = 'translateY(-110vh)';
+                card.style.opacity    = '0';
+
+                // Após 650ms (tempo da animação), executa o callback (navegar para o dashboard)
+                setTimeout(callback, 650);
+            }
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault(); // impede o submit padrão enquanto processamos
+
+                const formData = new FormData(form);
+
+                let urlFinal = null;
+
+                try {
+                    // Envia as credenciais via AJAX (fetch segue o redirect automaticamente)
+                    const response = await fetch(form.action, {
+                        method:   'POST',
+                        body:     formData,
+                        redirect: 'follow', // segue o redirect do Laravel após login
+                    });
+                    urlFinal = response.url; // URL final após todos os redirects
+                } catch (_) {
+                    // Erro de rede — submete o formulário normalmente como fallback
+                    form.submit();
+                    return;
+                }
+
+                // Detecta se o login foi bem-sucedido:
+                // Um login com ERRO redireciona DE VOLTA para /login
+                // Um login com SUCESSO redireciona para /admin/dashboard, /professor/dashboard, etc.
+                const loginFalhou = !urlFinal || urlFinal.includes('/login');
+
+                if (loginFalhou) {
+                    // Credenciais erradas — navega para a URL (que é o /login com erros na session)
+                    // Assim o Laravel exibe a mensagem de erro normalmente
+                    window.location.href = urlFinal || form.action;
+                } else {
+                    // Login bem-sucedido! Dispara a animação e depois navega para o dashboard
+                    animarSaida(function () {
+                        window.location.href = urlFinal;
+                    });
+                }
+            });
+        })();
+    </script>
 
 </body>
 </html>

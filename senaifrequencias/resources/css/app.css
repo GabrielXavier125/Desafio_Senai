@@ -1,45 +1,85 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   app.css — Arquivo de estilos principal do SENAI Frequências
+   Aqui estão as configurações globais do Tailwind CSS e os estilos customizados.
+   Este arquivo é processado pelo Vite e gera o CSS final em public/build/
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Importa o Tailwind CSS completo — isso disponibiliza todas as classes utilitárias
+   como bg-red-500, text-white, px-4, rounded-lg, flex, grid, etc. */
 @import 'tailwindcss';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+/* Diz ao Tailwind onde procurar classes sendo usadas no projeto.
+   O Tailwind escaneia estes arquivos e inclui no CSS final APENAS as classes encontradas.
+   Isso mantém o arquivo CSS pequeno — sem incluir milhares de classes não usadas. */
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php'; /* paginação do Laravel */
+@source '../../storage/framework/views/*.php'; /* views compiladas em cache */
+@source '../**/*.blade.php'; /* todas as views do projeto */
+@source '../**/*.js';        /* arquivos JavaScript (podem usar classes Tailwind via Alpine) */
 
+/* @theme define variáveis CSS personalizadas que ficam disponíveis como classes Tailwind.
+   Tudo aqui vira: bg-{nome}, text-{nome}, border-{nome}, ring-{nome}, etc. */
 @theme {
-    /* Tipografia SENAI */
+    /* ─── Tipografia ───────────────────────────────────────────────────── */
+    /* Define a fonte padrão do site — Inter é uma fonte moderna e legível */
     --font-sans: 'Inter', 'Roboto', ui-sans-serif, system-ui, sans-serif;
 
-    /* Paleta SENAI */
+    /* ─── Paleta de cores SENAI ────────────────────────────────────────── */
+    /* Cor principal do SENAI — vermelho institucional */
+    /* Uso: bg-senai (fundo), text-senai (texto), border-senai (borda), ring-senai (foco) */
     --color-senai:      #E30613;
+
+    /* Cor escura da sidebar — quase preto */
+    /* Uso: bg-senai-dark */
     --color-senai-dark: #1A1A1A;
+
+    /* Cor de fundo das páginas — cinza claro */
+    /* Uso: bg-senai-bg */
     --color-senai-bg:   #F5F5F5;
+
+    /* Cor de texto auxiliar — cinza médio */
+    /* Uso: text-senai-aux */
     --color-senai-aux:  #555555;
 
-    /* Animações */
+    /* ─── Animações de entrada ─────────────────────────────────────────── */
+    /* Animação fade-up: elemento sobe 18px enquanto aparece gradualmente */
+    /* Uso: class="animate-fade-up" */
     --animate-fade-up:   fade-up   0.5s ease-out both;
+
+    /* Animação fade-in: elemento aparece gradualmente sem movimento */
+    /* Uso: class="animate-fade-in" */
     --animate-fade-in:   fade-in   0.4s ease-out both;
+
+    /* Animação fade-left: elemento vem da esquerda enquanto aparece */
+    /* Uso: class="animate-fade-left" */
     --animate-fade-left: fade-left 0.5s ease-out both;
 }
 
+/* ─── Definição dos keyframes das animações ─────────────────────────────── */
+
+/* fade-up: começa invisível e 18px abaixo da posição final */
 @keyframes fade-up {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0);    }
+    from { opacity: 0; transform: translateY(18px); } /* estado inicial: transparente, abaixo */
+    to   { opacity: 1; transform: translateY(0);    } /* estado final: visível, posição normal */
 }
 
+/* fade-in: começa invisível e termina visível (sem movimento) */
 @keyframes fade-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from { opacity: 0; } /* começa transparente */
+    to   { opacity: 1; } /* termina opaco */
 }
 
+/* fade-left: começa invisível e 20px à esquerda da posição final */
 @keyframes fade-left {
-    from { opacity: 0; transform: translateX(-20px); }
-    to   { opacity: 1; transform: translateX(0);     }
+    from { opacity: 0; transform: translateX(-20px); } /* invisível, deslocado 20px para esquerda */
+    to   { opacity: 1; transform: translateX(0);     } /* visível, posição normal */
 }
 
-/* Delay helpers */
-.delay-100 { animation-delay: 100ms; }
-.delay-150 { animation-delay: 150ms; }
-.delay-200 { animation-delay: 200ms; }
-.delay-300 { animation-delay: 300ms; }
-.delay-400 { animation-delay: 400ms; }
-.delay-500 { animation-delay: 500ms; }
+/* ─── Classes de delay para animações ──────────────────────────────────── */
+/* Permitem atrasar o início de animações — útil para animar elementos em sequência */
+/* Uso: <div class="animate-fade-up delay-200"> = começa a animar após 200ms */
+.delay-100 { animation-delay: 100ms; } /* aguarda 0.1 segundo antes de começar */
+.delay-150 { animation-delay: 150ms; } /* aguarda 0.15 segundo */
+.delay-200 { animation-delay: 200ms; } /* aguarda 0.2 segundo */
+.delay-300 { animation-delay: 300ms; } /* aguarda 0.3 segundo */
+.delay-400 { animation-delay: 400ms; } /* aguarda 0.4 segundo */
+.delay-500 { animation-delay: 500ms; } /* aguarda 0.5 segundo antes de começar */

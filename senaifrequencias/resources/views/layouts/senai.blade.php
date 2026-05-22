@@ -9,8 +9,14 @@
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800,900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    <style>
+        @keyframes pageFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+    </style>
 </head>
-<body class="font-sans antialiased" style="background-color:#F0F2F5;">
+<body class="font-sans antialiased" style="background-color:#F0F2F5; animation: pageFadeIn 0.3s ease-out both;">
 
 <div class="flex h-screen overflow-hidden"
      x-data="{ sidebarOpen: false }"
